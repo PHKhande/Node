@@ -5,14 +5,11 @@ const app = express();
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
-const chatRoutes = require('./routes/chatApp');
-
 
 app.use(bodyParser.urlencoded( {extended:false} ));
 
-// app.use('/admin', adminRoutes);
-// app.use(shopRoutes);
-app.use(chatRoutes);
+app.use('/admin', adminRoutes);
+app.use(shopRoutes);
 
 
 app.use((req, res, next) => {
