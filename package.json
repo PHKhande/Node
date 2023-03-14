@@ -1,0 +1,24 @@
+{
+  "name": "node",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js",
+    "start-server": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PHKhande/Node.git"
+  },
+  "author": "Prathviraj Khande",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PHKhande/Node/issues"
+  },
+  "homepage": "https://github.com/PHKhande/Node#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.21"
+  }
+}
