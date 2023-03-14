@@ -1,6 +1,16 @@
 const http = require('http');
-const routes = require('./routes');
+const express = require('express');
 
-const server = http.createServer(routes);
+const app = express();
 
-server.listen(3000);
+app.use( (req, res, next) => {
+    console.log("In middleware");
+    next();
+});
+
+app.use( (req, res, next) => {
+    console.log("In second middleware");
+    res.send('<h1> Hello </h1>')
+});
+
+app.listen(3000);
