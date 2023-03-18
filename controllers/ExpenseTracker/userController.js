@@ -1,60 +1,63 @@
 const ExpTrckUser = require('../../models/ExpenseTracker/user');
+const bcrypt = require('bcrypt');
 
-exports.postUserInfo = async (req, res, next) => {
+exports.signUp = async (req, res, next) => {
   try{
-    if(!req.body.name | !req.body.password | !req.body.email ){
-        throw new Error('All fields are mandatory')
+    const {name, email, password} = req.body;
+
+    if(!name | !email | !password){
+      return res.status(500).json({message: 'All fields are mandatory'})
     }
-  }
-  catch{
-    return res.status(500).json({error: 'All fields are mandatory'})
-  }  
-
-  try{
-    const name = req.body.name;
-    const password = req.body.password;
-    const email = req.body.email;
-    // console.log(name, password, email)
-    bcrypt.hash(password, 10, async(err, encryptPass) => {
-      const userData = await ExpTrckUser.create({
+    else{
+      const encryptPass = await bcrypt.hash(password, 10); 
+      await ExpTrckUser.create({
         name: name,
         email: email,
-        password: password
+        password: encryptPass
       });
-      res.status(201).json({message: 'Successfully created new user'});
-    })
-    
-    
+      res.status(201).json({message: 'Successfully created new user'});   
+    }
   } 
   catch(err){
-    res.status(500).json({error: "User Already Present"})
+    res.status(500).json({message: "User Already Present"})
   }
 }
 
-exports.loginUserInfo = async (req, res, next) => {
-  const findEmail= req.body.loginEmail;
-  const findEmailpassword = req.body.loginPassword;
+exports.login = async (req, res, next) => {
+
   try{
-    const availableUsers = await ExpTrckUser.findAll( { where: {email: findEmail} });
-
-    if (availableUsers.length > 0){
-      const availableUser = availableUsers[0];
-
-      if (availableUser.password === findEmailpassword){
-        res.status(201).json({availableUserDB: availableUser })
-      }
-      else{
-        res.status(401).json({error: "User not authorized" })
-      }
+    const findEmail = req.body.loginEmail;
+    const findEmailpassword = req.body.loginPassword;
+    if(!findEmail | !findEmailpassword){
+      return res.status(500).json({message: 'Enter all fields to login'});
     }
     else{
-      throw new Error('User not found')
+      const availableUsers = await ExpTrckUser.findAll( { where: {email: findEmail} });
+
+      if (availableUsers.length > 0){
+        const availableUser = availableUsers[0];
+        
+        bcrypt.compare(findEmailpassword, availableUser.password, (err, result) => {
+          if(err){
+            throw new Error("Something went wrong");
+          }
+
+          if(result === true){
+            res.status(201).json({message: 'User logged in successfully', success: true})
+          }
+          else{
+            res.status(401).json({message: "User not authorized", success: false})
+          }
+        })
+      }
+      else{
+        throw new Error('User not found')
+      }
     }
-    
   }
+
   catch(err){
-    err = "User not found";
-    res.status(500).json({error: err});
+    res.status(500).json({message: err, success: false});
   }
 }
 
