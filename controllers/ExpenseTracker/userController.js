@@ -15,12 +15,16 @@ exports.postUserInfo = async (req, res, next) => {
     const password = req.body.password;
     const email = req.body.email;
     // console.log(name, password, email)
-    const userData = await ExpTrckUser.create({
-      name: name,
-      email: email,
-      password: password
-    });
-    res.status(201).json({newUserData: userData});
+    bcrypt.hash(password, 10, async(err, encryptPass) => {
+      const userData = await ExpTrckUser.create({
+        name: name,
+        email: email,
+        password: password
+      });
+      res.status(201).json({message: 'Successfully created new user'});
+    })
+    
+    
   } 
   catch(err){
     res.status(500).json({error: "User Already Present"})
@@ -31,7 +35,7 @@ exports.loginUserInfo = async (req, res, next) => {
   const findEmail= req.body.loginEmail;
   const findEmailpassword = req.body.loginPassword;
   try{
-    const availableUsers =   await ExpTrckUser.findAll( { where: {email: findEmail} });
+    const availableUsers = await ExpTrckUser.findAll( { where: {email: findEmail} });
 
     if (availableUsers.length > 0){
       const availableUser = availableUsers[0];
