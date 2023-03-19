@@ -3,14 +3,14 @@ const path = require('path');
 const express = require('express');
 
 const expenses = require('../../controllers/ExpenseTracker/expenses');
+const authy = require('../../authMiddleware/auth');
 
 const router = express.Router();
 
-router.get('/all', expenses.getAll);
+router.get('/all', authy.authenticate, expenses.getAllExpenses);
 
-router.post('/add', expenses.postExpense);
+router.post('/add', authy.authenticate, expenses.postExpense);
 
-router.delete('/:delId', expenses.delExpense);
-
+router.delete('/:delId', authy.authenticate, expenses.delExpense);
 
 module.exports = router;

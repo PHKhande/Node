@@ -1,5 +1,6 @@
 const ExpTrckUser = require('../../models/ExpenseTracker/user');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 exports.signUp = async (req, res, next) => {
   try{
@@ -43,7 +44,7 @@ exports.login = async (req, res, next) => {
           }
 
           if(result === true){
-            res.status(201).json({message: 'User logged in successfully', success: true})
+            res.status(201).json({message: 'User logged in successfully', success: true, token: generateAccessToken(availableUser.id)});
           }
           else{
             res.status(401).json({message: "User not authorized", success: false})
@@ -59,6 +60,10 @@ exports.login = async (req, res, next) => {
   catch(err){
     res.status(500).json({message: err, success: false});
   }
+}
+
+function generateAccessToken(id){
+  return jwt.sign(id, 'amareshwar');
 }
 
 // exports.deleteUser = async (req, res, next) => {

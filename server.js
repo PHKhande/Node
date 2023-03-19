@@ -12,6 +12,8 @@ const sequelize = require('./util/ExpenseTracker/database');
 // const User = require('./models/user');
 // const Cart = require('./models/cart');
 // const CartItem = require('./models/cart-item');
+const Expense = require('./models/ExpenseTracker/expenses');
+const ExpUser = require('./models/ExpenseTracker/user');
 
 const app = express();
 
@@ -46,6 +48,9 @@ app.use('/expense', expenseRoutes)
 
 app.use(errorController.get404);
 
+Expense.belongsTo(ExpUser, { constraints: true, onDelete: 'CASCADE' });
+ExpUser.hasMany(Expense);
+
 // Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
 // User.hasMany(Product);
 // User.hasOne(Cart);
@@ -55,6 +60,7 @@ app.use(errorController.get404);
 
 sequelize
   .sync()
+  // .sync({force: true})
   .then( result => {
     app.listen(3000);
   })
