@@ -8,7 +8,7 @@ exports.getAllExpenses = async (req, res, next) => {
       res.status(201).json( {message: "Successfully extracted", allExpenseData:AllExpenses, success:true}); 
   } 
   catch(err){
-    console.log(err);
+    // console.log(err);
     res.status(500).json({message: "Error while fetching already present expenses", success:false})
   }
 }

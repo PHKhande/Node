@@ -14,6 +14,7 @@ const sequelize = require('./util/ExpenseTracker/database');
 // const CartItem = require('./models/cart-item');
 const Expense = require('./models/ExpenseTracker/expenses');
 const ExpUser = require('./models/ExpenseTracker/user');
+const PremOrder = require('./models/ExpenseTracker/premiumOrders');
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.set('views', 'views');
 // const shopRoutes = require('./routes/shop');
 const userRoutes = require('./routes/ExpenseTracker/user');
 const expenseRoutes = require('./routes/ExpenseTracker/expenses');
+const purchaseRoutes = require('./routes/ExpenseTracker/purchase');
 
 // app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json({ extended: false }));
@@ -44,12 +46,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 // app.use(shopRoutes);
 
 app.use('/', userRoutes);
-app.use('/expense', expenseRoutes)
+app.use('/expense', expenseRoutes);
+app.use('/purchase', purchaseRoutes);
+
 
 app.use(errorController.get404);
 
 Expense.belongsTo(ExpUser, { constraints: true, onDelete: 'CASCADE' });
 ExpUser.hasMany(Expense);
+PremOrder.belongsTo(ExpUser, { constraints: true, onDelete: 'CASCADE' });
+ExpUser.hasMany(PremOrder);
 
 // Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
 // User.hasMany(Product);

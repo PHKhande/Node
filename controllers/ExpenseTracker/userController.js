@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 
 exports.signUp = async (req, res, next) => {
   try{
+    
     const {name, email, password} = req.body;
 
     if(!name | !email | !password){
@@ -14,7 +15,8 @@ exports.signUp = async (req, res, next) => {
       await ExpTrckUser.create({
         name: name,
         email: email,
-        password: encryptPass
+        password: encryptPass,
+        isPremium: false
       });
       res.status(201).json({message: 'Successfully created new user'});   
     }
@@ -66,15 +68,17 @@ function generateAccessToken(id){
   return jwt.sign(id, 'amareshwar');
 }
 
-// exports.deleteUser = async (req, res, next) => {
 
-//     const delId = req.params.deleId;
-//     try{
-//         const delUser =   await ExpTrckUser.destroy( { where: { id:delId } });
-//         res.status(201).json({delUserfromDB: delUser })
-//     }
-//     catch(err){
-//         res.status(500).json({error: err})
-//     }
-// }
+
+exports.getUserInfo = async (req, res, next) => {
+  try{
+    const idUser = req.user.id;
+
+    const ourUser = await ExpTrckUser.findByPk(idUser);
+    res.status(201).json( {isPremiumMember: ourUser.isPremium}); 
+  } 
+  catch(err){
+    res.status(500).json({message: "Error while fetching info. about premium"})
+  }
+}
 
