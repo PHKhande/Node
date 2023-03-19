@@ -42,7 +42,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // app.use(shopRoutes);
 
 app.use('/', userRoutes);
-app.use('/', expenseRoutes)
+app.use('/expense', expenseRoutes)
 
 app.use(errorController.get404);
 

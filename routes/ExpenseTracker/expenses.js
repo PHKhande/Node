@@ -6,9 +6,11 @@ const expenses = require('../../controllers/ExpenseTracker/expenses');
 
 const router = express.Router();
 
-router.get('/expenses/all', expenses.getAll);
+router.get('/all', expenses.getAll);
 
-router.post('/expense/add', expenses.postExpense);
+router.post('/add', expenses.postExpense);
+
+router.delete('/:delId', expenses.delExpense);
 
 
 module.exports = router;
