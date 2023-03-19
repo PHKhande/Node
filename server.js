@@ -28,6 +28,7 @@ app.set('views', 'views');
 const userRoutes = require('./routes/ExpenseTracker/user');
 const expenseRoutes = require('./routes/ExpenseTracker/expenses');
 const purchaseRoutes = require('./routes/ExpenseTracker/purchase');
+const premiumRoutes = require('./routes/ExpenseTracker/premium');
 
 // app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json({ extended: false }));
@@ -48,6 +49,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', userRoutes);
 app.use('/expense', expenseRoutes);
 app.use('/purchase', purchaseRoutes);
+app.use('/premium', premiumRoutes);
 
 
 app.use(errorController.get404);
