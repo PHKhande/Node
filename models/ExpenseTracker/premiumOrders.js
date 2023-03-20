@@ -1,4 +1,4 @@
-const Sequelize = require('sequelize')
+const Sequelize = require('sequelize');
 
 const sequelize = require('../../util/ExpenseTracker/database');
 
@@ -21,6 +21,6 @@ const PremOrder = sequelize.define( 'order', {
     paymentId: {
         type: Sequelize.STRING(255)
     }
-})
+});
 
 module.exports = PremOrder;

@@ -1,4 +1,4 @@
-const Sequelize = require('sequelize')
+const Sequelize = require('sequelize');
 
 const sequelize = require('../../util/ExpenseTracker/database');
 
@@ -30,6 +30,6 @@ const ExpTrckUser = sequelize.define( 'user', {
 
     totalExpense: Sequelize.DOUBLE
 
-})
+});
 
 module.exports = ExpTrckUser;

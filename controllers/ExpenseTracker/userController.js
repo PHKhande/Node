@@ -8,62 +8,28 @@ exports.signUp = async (req, res, next) => {
     const {name, email, password} = req.body;
 
     if(!name | !email | !password){
-      return res.status(500).json({message: 'All fields are mandatory'})
+      return res.status(500).json({message: 'All fields are mandatory'});
     }
-    else{
-      const encryptPass = await bcrypt.hash(password, 10); 
-      await ExpTrckUser.create({
-        name: name,
-        email: email,
-        password: encryptPass,
-        isPremium: false,
-        totalExpense: 0
-      });
-      res.status(201).json({message: 'Successfully created new user'});   
-    }
-  } 
-  catch(err){
-    res.status(500).json({message: "User Already Present"})
+    
+    const encryptPass = await bcrypt.hash(password, 10); 
+    
+    await ExpTrckUser.create({
+      name: name,
+      email: email,
+      password: encryptPass,
+      isPremium: false,
+      totalExpense: 0
+    });
+
+    res.status(201).json({message: 'Successfully created new user'});   
   }
+
+  catch(err){
+    console.log(err);
+    res.status(500).json({message: "User Already Present"});
+  }
+
 }
-
-// exports.login = async (req, res, next) => {
-
-//   try{
-//     const findEmail = req.body.loginEmail;
-//     const findEmailpassword = req.body.loginPassword;
-//     if(!findEmail | !findEmailpassword){
-//       return res.status(500).json({message: 'Enter all fields to login'});
-//     }
-//     else{
-//       const availableUsers = await ExpTrckUser.findAll( { where: {email: findEmail} });
-
-//       if (availableUsers.length > 0){
-//         const availableUser = availableUsers[0];
-        
-//         bcrypt.compare(findEmailpassword, availableUser.password, (err, result) => {
-//           if(err){
-//             throw new Error("Something went wrong");
-//           }
-
-//           if(result === true){
-//             res.status(201).json({message: 'User logged in successfully', success: true, token: generateAccessToken(availableUser.id)});
-//           }
-//           else{
-//             res.status(401).json({message: "User not authorized", success: false})
-//           }
-//         })
-//       }
-//       else{
-//         throw new Error('User not found')
-//       }
-//     }
-//   }
-
-//   catch(err){
-//     res.status(500).json({message: err, success: false});
-//   }
-// }
 
 exports.login = async (req, res, next) => {
   const { loginEmail, loginPassword } = req.body;
@@ -87,9 +53,13 @@ exports.login = async (req, res, next) => {
 
     res.status(201).json({ message: 'User logged in successfully', success: true, token: generateAccessToken(availableUser.id) });
     
-  } catch (err) {
+  } 
+  
+  catch (err) {
+    console.log(err);
     res.status(500).json({ message: err.message, success: false });
   }
+
 };
 
 
@@ -100,14 +70,19 @@ function generateAccessToken(id){
 
 
 exports.getUserInfo = async (req, res, next) => {
+
   try{
     const idUser = req.user.id;
 
     const ourUser = await ExpTrckUser.findByPk(idUser);
+
     res.status(201).json( {isPremiumMember: ourUser.isPremium}); 
   } 
+
   catch(err){
-    res.status(500).json({message: "Error while fetching info. about premium"})
+    console.log(err);
+    res.status(500).json({message: "Error while fetching info. about premium"});
   }
+
 }
 
