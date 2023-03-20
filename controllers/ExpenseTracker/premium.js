@@ -1,26 +1,22 @@
 const ExpTrckUser = require('../../models/ExpenseTracker/user');
 const Expenses = require('../../models/ExpenseTracker/expenses');
+const sequelize = require('../../util/ExpenseTracker/database');
 
 exports.getAllExpensesFromDB = async (req, res, next) => {
 
     try{
-        const LeaderBoard = [];
-        const AllUsers = await ExpTrckUser.findAll();
-        if (AllUsers.length > 0){
-            for (let i = 0; i < AllUsers.length; i++){
-                const expenses = await Expenses.findAll({ where: { UserId: AllUsers[i].id } });
-                let totalExpense = 0;
-                if(expenses.length > 0){
-                    for (let j = 0; j < expenses.length; j++){
-                        totalExpense += parseInt(expenses[j].amountDB)
-                        
-                    }
+        const leaderBoard = await ExpTrckUser.findAll( {
+            attributes: ['name', sequelize.fn( 'sum', sequelize.col('expenses.amountDB'), 'totalExpense')],
+            include: [
+                {
+                    model : Expenses,
+                    attributes : []
                 }
-                LeaderBoard.push([AllUsers[i].name, totalExpense]);
-            }
-        }
-        res.status(201).json( {allExpenseDataFromDB:LeaderBoard} ); 
-
+            ],
+            group: ['ExpTrckUser.id'],
+            order: ['totalExpense', 'DESC']
+        })
+        res.status(201).json( {allExpenseDataFromDB:leaderBoard} ); 
     }
 
     catch(err){
