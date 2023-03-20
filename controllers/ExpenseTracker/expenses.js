@@ -1,4 +1,5 @@
 const Expenses = require('../../models/ExpenseTracker/expenses');
+const ExpUser = require('../../models/ExpenseTracker/user');
 
 exports.getAllExpenses = async (req, res, next) => {
   try{
@@ -21,6 +22,9 @@ exports.postExpense = async (req, res, next) => {
       return res.status(500).json({message: 'All fields are mandatory'})
     }
     else{
+      const user = await ExpUser.findOne( {where: {id: idUser}} );
+      const newtotalExpense = parseInt(user.totalExpense) + parseInt(amount);
+      await user.update({ totalExpense: newtotalExpense });
       const data = await Expenses.create({
         amountDB: amount,
         categoryDB: category,
@@ -36,11 +40,23 @@ exports.postExpense = async (req, res, next) => {
 }
 
 exports.delExpense = async (req, res, next) => {
-    const deleteId = req.params.delId;
-    const idUser = req.user.id;
+    
     try{
-      const delUser = await Expenses.destroy( { where: { id:deleteId, userId:idUser } });
-      res.status(201).json({delUserfromDB: delUser })
+      const deleteId = req.params.delId;
+      const idUser = req.user.id;
+
+      const negExpense = await Expenses.findOne( { where: { id:deleteId, userId:idUser } });
+      const negExpenseAmt = negExpense.amountDB;
+
+      const delExpense = await Expenses.destroy( { where: { id:deleteId, userId:idUser } });
+
+      const user = await ExpUser.findOne( {where: {id: idUser}} );
+      const newtotalExpense = parseInt(user.totalExpense) - parseInt(negExpenseAmt);
+      await user.update({ totalExpense: newtotalExpense });
+
+      res.status(201).json({delUserfromDB: delExpense })
+
+
     }
     catch(err){
       res.status(500).json({error: err})

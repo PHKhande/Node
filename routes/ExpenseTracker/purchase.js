@@ -9,5 +9,4 @@ router.get('/premiummembership', authy.authenticate, purchasePremium.getpurchase
 
 router.post('/updatetransactionstatus', authy.authenticate, purchasePremium.postTransactionStatus);
 
-
 module.exports = router;

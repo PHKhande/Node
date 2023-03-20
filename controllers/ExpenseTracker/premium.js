@@ -6,15 +6,11 @@ exports.getAllExpensesFromDB = async (req, res, next) => {
 
     try{
         const leaderBoard = await ExpTrckUser.findAll( {
-            attributes: ['name', sequelize.fn( 'sum', sequelize.col('expenses.amountDB'), 'totalExpense')],
-            include: [
-                {
-                    model : Expenses,
-                    attributes : []
-                }
-            ],
-            group: ['ExpTrckUser.id'],
-            order: ['totalExpense', 'DESC']
+            attributes: [
+                'name',
+                'totalExpense'],
+            group: ['user.id'],
+            order: [[sequelize.literal('totalExpense'), 'DESC']]
         })
         res.status(201).json( {allExpenseDataFromDB:leaderBoard} ); 
     }

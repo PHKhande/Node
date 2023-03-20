@@ -26,7 +26,10 @@ const ExpTrckUser = sequelize.define( 'user', {
         allowNull: false
     },
 
-    isPremium: Sequelize.BOOLEAN
+    isPremium: Sequelize.BOOLEAN,
+
+    totalExpense: Sequelize.DOUBLE
+
 })
 
 module.exports = ExpTrckUser;

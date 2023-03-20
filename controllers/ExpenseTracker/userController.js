@@ -16,7 +16,8 @@ exports.signUp = async (req, res, next) => {
         name: name,
         email: email,
         password: encryptPass,
-        isPremium: false
+        isPremium: false,
+        totalExpense: 0
       });
       res.status(201).json({message: 'Successfully created new user'});   
     }
