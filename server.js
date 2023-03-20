@@ -15,6 +15,7 @@ const sequelize = require('./util/ExpenseTracker/database');
 const Expense = require('./models/ExpenseTracker/expenses');
 const ExpUser = require('./models/ExpenseTracker/user');
 const PremOrder = require('./models/ExpenseTracker/premiumOrders');
+const ForgotPasswordRequest = require('./models/ExpenseTracker/forgotPassword');
 
 const app = express();
 
@@ -58,6 +59,8 @@ Expense.belongsTo(ExpUser, { constraints: true, onDelete: 'CASCADE' });
 ExpUser.hasMany(Expense);
 PremOrder.belongsTo(ExpUser, { constraints: true, onDelete: 'CASCADE' });
 ExpUser.hasMany(PremOrder);
+ForgotPasswordRequest.belongsTo(ExpUser, { constraints: true, onDelete: 'CASCADE' });
+ExpUser.hasMany(ForgotPasswordRequest);
 
 // Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
 // User.hasMany(Product);
