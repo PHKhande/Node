@@ -1,5 +1,6 @@
 const Expenses = require('../../models/ExpenseTracker/expenses');
 const ExpUser = require('../../models/ExpenseTracker/user');
+const sequelize = require('../../util/ExpenseTracker/database');
 
 exports.getAllExpenses = async (req, res, next) => {
   try{
@@ -15,32 +16,34 @@ exports.getAllExpenses = async (req, res, next) => {
 }
 
 exports.postExpense = async (req, res, next) => {
+  const t = await sequelize.transaction();
   try{
     const {amount, category, description} = req.body;
     const idUser = req.user.id;
     if(!amount | !category | !description){
       return res.status(500).json({message: 'All fields are mandatory'})
     }
-    else{
-      const user = await ExpUser.findOne( {where: {id: idUser}} );
-      const newtotalExpense = parseInt(user.totalExpense) + parseInt(amount);
-      await user.update({ totalExpense: newtotalExpense });
+      const newtotalExpense = Number(req.user.totalExpense) + Number(amount);
+      await ExpUser.update({ totalExpense: newtotalExpense },{where: {id:idUser}, transaction:t});
       const data = await Expenses.create({
         amountDB: amount,
         categoryDB: category,
         descriptionDB: description,
         userId: idUser
-      });
+      },{transaction:t});
+
+      await t.commit();
       res.status(201).json({newExpenseData: data});
-    }
   } 
   catch(err){
+    await t.rollback();
+    console.log(err)
     res.status(500).json({error: err})
   }
 }
 
 exports.delExpense = async (req, res, next) => {
-    
+  const t = await sequelize.transaction();
     try{
       const deleteId = req.params.delId;
       const idUser = req.user.id;
@@ -48,17 +51,17 @@ exports.delExpense = async (req, res, next) => {
       const negExpense = await Expenses.findOne( { where: { id:deleteId, userId:idUser } });
       const negExpenseAmt = negExpense.amountDB;
 
-      const delExpense = await Expenses.destroy( { where: { id:deleteId, userId:idUser } });
+      const delExpense = await Expenses.destroy( { where: { id:deleteId, userId:idUser }, transaction:t });
 
-      const user = await ExpUser.findOne( {where: {id: idUser}} );
-      const newtotalExpense = parseInt(user.totalExpense) - parseInt(negExpenseAmt);
-      await user.update({ totalExpense: newtotalExpense });
+      const newtotalExpense = Number(req.user.totalExpense) - Number(negExpenseAmt);
+      await ExpUser.update({ totalExpense: newtotalExpense }, {where: {id: idUser}, transaction:t });
 
+      await t.commit();
       res.status(201).json({delUserfromDB: delExpense })
-
-
     }
     catch(err){
+      await t.rollback();
+      console.log(err);
       res.status(500).json({error: err})
     }
 }
