@@ -3,10 +3,36 @@ const ExpUser = require('../../models/ExpenseTracker/user');
 const sequelize = require('../../util/ExpenseTracker/database');
 
 exports.getAllExpenses = async (req, res, next) => {
-
   try{
-    const AllExpenses = await req.user.getExpenses();
-    res.status(201).json( {message: "Successfully extracted", allExpenseData:AllExpenses, success:true}); 
+    const ITEMS_PER_PAGE = 5;
+    const page = +req.query.page || 1;
+    let totalItems;
+
+    Expenses.count()
+      .then( (total) => {
+        totalItems = total;
+        return Expenses.findAll({
+          offset: (page - 1) * ITEMS_PER_PAGE,
+          limit: ITEMS_PER_PAGE
+        })
+      })
+        .then( (expenses) => {
+          res.json({
+            expenses: expenses,
+            currentPage: page,
+            hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+            nextPage: page + 1,
+            hasPreviousPage: page > 1,
+            previousPage: page - 1,
+            lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE)
+          })
+          
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+    // const AllExpenses = await req.user.getExpenses();
+    // res.status(201).json( {message: "Successfully extracted", allExpenseData:AllExpenses, success:true}); 
   } 
   catch(err){
     console.log(err);
