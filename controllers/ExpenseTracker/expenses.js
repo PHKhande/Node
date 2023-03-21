@@ -4,8 +4,9 @@ const sequelize = require('../../util/ExpenseTracker/database');
 
 exports.getAllExpenses = async (req, res, next) => {
   try{
-    const ITEMS_PER_PAGE = 5;
+    // const ITEMS_PER_PAGE = 5;
     const page = +req.query.page || 1;
+    const ITEMS_PER_PAGE = +req.query.limit;
     let totalItems;
 
     Expenses.count()
