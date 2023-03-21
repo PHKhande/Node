@@ -1,4 +1,7 @@
 const ExpTrckUser = require('../../models/ExpenseTracker/user');
+const DownFiles = require('../../models/ExpenseTracker/downloadedfile');
+
+const S3Services = require('../../services/ExpenseTracker/S3Services');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -84,5 +87,42 @@ exports.getUserInfo = async (req, res, next) => {
     res.status(500).json({message: "Error while fetching info. about premium"});
   }
 
+}
+
+
+exports.downloadExpense = async (req, res, next) => {
+
+  try{
+    const expenses = await req.user.getExpenses();
+    const stringifiedExpense = JSON.stringify(expenses);
+    const userID = req.user.id;
+    const fileName = `Expense${userID}/${new Date()}.txt`;
+    const fileURL = await S3Services.uploadtoS3(stringifiedExpense, fileName);
+    await DownFiles.create( {
+      fileurl: fileURL,
+      userId : userID
+    })
+    res.status(200).json({fileURL:fileURL}); 
+  }
+
+  catch(err){
+    console.log(err);
+    res.status(500).json({fileURL:'', err: err}); 
+  }
+
+}
+
+exports.downloadExpenseAll = async( req, res, next) => {
+  
+  try {
+    // console.log(req.user);
+    // const AllURLs = []
+    const AllURLs = await req.user.getDownloadedfiles();
+    res.status(200).json({AllURLs:AllURLs}); 
+
+  } catch(err) {
+    console.log(err);
+    res.status(500).json({fileURL:'', err: err}); 
+  }
 }
 

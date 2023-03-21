@@ -16,6 +16,7 @@ const Expense = require('./models/ExpenseTracker/expenses');
 const ExpUser = require('./models/ExpenseTracker/user');
 const PremOrder = require('./models/ExpenseTracker/premiumOrders');
 const ForgotPasswordRequest = require('./models/ExpenseTracker/forgotPassword');
+const DownloadedFile = require('./models/ExpenseTracker/downloadedfile');
 
 const app = express();
 
@@ -61,6 +62,8 @@ PremOrder.belongsTo(ExpUser, { constraints: true, onDelete: 'CASCADE' });
 ExpUser.hasMany(PremOrder);
 ForgotPasswordRequest.belongsTo(ExpUser, { constraints: true, onDelete: 'CASCADE' });
 ExpUser.hasMany(ForgotPasswordRequest);
+DownloadedFile.belongsTo(ExpUser, { constraints: true, onDelete: 'CASCADE' });
+ExpUser.hasMany(DownloadedFile);
 
 // Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
 // User.hasMany(Product);

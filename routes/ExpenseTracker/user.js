@@ -18,6 +18,4 @@ router.get('/password/resetpassword/:resetId', FPassword.getResetlinkInfo);
 
 router.post('/password/resetpassword/:resetId', FPassword.postResetPasswordInfo);
 
-
-
 module.exports = router;
